@@ -1,0 +1,11 @@
+{
+  "name": "MoodMap — mood & energy tracker",
+  "short_name": "MoodMap",
+  "description": "Private daily mood and energy check-ins with a year-in-pixels view.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f3ee",
+  "theme_color": "#6f8f87",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MoodMap — private mood &amp; energy tracker</title>
+<meta name="description" content="A private daily mood and energy check-in with a year-in-pixels view and gentle pattern insights. Everything stays on your device.">
+<meta name="theme-color" content="#6f8f87">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+<script>try{var t=JSON.parse(localStorage.getItem('moodmap.settings')||'{}').theme;if(t&&t!=='auto')document.documentElement.dataset.theme=t;}catch(e){}</script>
+</head>
+<body>
+<div id="lock" class="lock" hidden>
+  <form id="lockForm" class="lock-card">
+    <div class="logo big">◐</div>
+    <h2>MoodMap is locked</h2>
+    <input id="lockInput" type="password" inputmode="numeric" autocomplete="off" placeholder="Passcode" aria-label="Passcode">
+    <button class="btn primary" type="submit">Unlock</button>
+    <p id="lockMsg" class="muted small" role="alert"></p>
+  </form>
+</div>
+
+<header class="top">
+  <div class="brand"><span class="logo">◐</span><h1>MoodMap</h1></div>
+  <div class="top-right">
+    <span id="streakBadge" class="badge" title="Check-in streak">🔥 0</span>
+    <button id="themeBtn" class="icon-btn" aria-label="Toggle dark/light theme" title="Theme">◑</button>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button role="tab" data-tab="today" class="tab active" aria-selected="true">Check-in</button>
+  <button role="tab" data-tab="year" class="tab">Year</button>
+  <button role="tab" data-tab="month" class="tab">Month</button>
+  <button role="tab" data-tab="insights" class="tab">Insights</button>
+  <button role="tab" data-tab="settings" class="tab">Settings</button>
+</nav>
+
+<main>
+  <!-- CHECK-IN -->
+  <section id="tab-today" class="panel active">
+    <div class="card checkin">
+      <div class="checkin-head">
+        <button id="prevDay" class="icon-btn" aria-label="Previous day">‹</button>
+        <div class="center">
+          <h2 id="ciTitle">How are you today?</h2>
+          <input id="ciDate" type="date" aria-label="Check-in date">
+        </div>
+        <button id="nextDay" class="icon-btn" aria-label="Next day">›</button>
+      </div>
+      <p class="label">Mood</p>
+      <div id="moodPick" class="pick" role="radiogroup" aria-label="Mood"></div>
+      <p class="label">Energy</p>
+      <div id="energyPick" class="pick" role="radiogroup" aria-label="Energy"></div>
+      <p class="label">What was part of your day? <span class="muted">(optional)</span></p>
+      <div id="tagPick" class="tags"></div>
+      <form id="addTagForm" class="add-tag">
+        <input id="newTag" maxlength="30" placeholder="+ custom tag" aria-label="Add custom tag">
+      </form>
+      <p class="label">Note <span class="muted">(optional)</span></p>
+      <textarea id="ciNote" maxlength="280" rows="2" placeholder="One line about today…"></textarea>
+      <div class="row">
+        <button id="saveBtn" class="btn primary" disabled>Save check-in</button>
+        <button id="clearDayBtn" class="btn ghost" hidden>Delete this day</button>
+        <span id="saveMsg" class="muted small" role="status"></span>
+      </div>
+    </div>
+    <div class="card mini">
+      <div id="quickStats" class="stats"></div>
+    </div>
+  </section>
+
+  <!-- YEAR -->
+  <section id="tab-year" class="panel">
+    <div class="card">
+      <div class="toolbar">
+        <div class="seg" role="group" aria-label="Year">
+          <button id="yearPrev" class="icon-btn" aria-label="Previous year">‹</button>
+          <select id="yearSel" aria-label="Year"></select>
+          <button id="yearNext" class="icon-btn" aria-label="Next year">›</button>
+        </div>
+        <div class="seg metric-toggle" role="group" aria-label="Color by">
+          <button class="seg-btn active" data-metric="mood">Mood</button>
+          <button class="seg-btn" data-metric="energy">Energy</button>
+        </div>
+      </div>
+      <div class="grid-wrap"><div id="yearGrid" class="year-grid" role="grid" aria-label="Year in pixels"></div></div>
+      <div id="legend" class="legend"></div>
+      <p id="yearSummary" class="muted small"></p>
+    </div>
+  </section>
+
+  <!-- MONTH -->
+  <section id="tab-month" class="panel">
+    <div class="card">
+      <div class="toolbar">
+        <div class="seg">
+          <button id="monthPrev" class="icon-btn" aria-label="Previous month">‹</button>
+          <h3 id="monthTitle"></h3>
+          <button id="monthNext" class="icon-btn" aria-label="Next month">›</button>
+        </div>
+        <div class="seg metric-toggle" role="group" aria-label="Color by">
+          <button class="seg-btn active" data-metric="mood">Mood</button>
+          <button class="seg-btn" data-metric="energy">Energy</button>
+        </div>
+      </div>
+      <div id="monthCal" class="month-cal"></div>
+      <p id="monthSummary" class="muted small"></p>
+    </div>
+  </section>
+
+  <!-- INSIGHTS -->
+  <section id="tab-insights" class="panel">
+    <div class="toolbar">
+      <div class="seg metric-toggle" role="group" aria-label="Insights for">
+        <button class="seg-btn active" data-metric="mood">Mood</button>
+        <button class="seg-btn" data-metric="energy">Energy</button>
+      </div>
+      <span id="demoFlag" class="badge demo" hidden>Showing demo data</span>
+    </div>
+    <div id="insightsEmpty" class="card empty" hidden>
+      <p>Insights appear once you have a few check-ins. Patterns are only shown when there are at least <b>3 days with</b> and <b>3 days without</b> a tag.</p>
+      <button class="btn" data-action="demo">Preview with demo data</button>
+    </div>
+    <div id="insightsBody">
+      <div class="card"><h3>Trend</h3><div class="seg small-seg" role="group" aria-label="Trend range">
+        <button class="seg-btn active" data-range="30">30 days</button><button class="seg-btn" data-range="7">7 days</button></div>
+        <div id="trendChart" class="chart"></div><p id="trendText" class="muted small"></p></div>
+      <div class="card"><h3>Tags and how your days went</h3><ul id="tagInsights" class="ins-list"></ul>
+        <p class="muted tiny">These are patterns in your own entries, not causes. Lots of things change together.</p></div>
+      <div class="two">
+        <div class="card"><h3>By weekday</h3><div id="weekdayChart"></div></div>
+        <div class="card"><h3>Streaks &amp; weeks</h3><div id="weekStats" class="stats col"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SETTINGS / ABOUT -->
+  <section id="tab-settings" class="panel">
+    <div class="card">
+      <h3>Reminder</h3>
+      <label class="switch-row"><input type="checkbox" id="remOn"> Daily reminder at <input type="time" id="remTime" value="20:00"></label>
+      <p class="muted small">A notification appears at that time if MoodMap is open in a tab and you haven't checked in yet. Browsers don't allow reminders from a closed web page without a server, and MoodMap has none.</p>
+      <p id="remMsg" class="muted small" role="status"></p>
+    </div>
+    <div class="card">
+      <h3>Your data</h3>
+      <p class="muted small">Everything is stored in this browser's localStorage. Nothing is uploaded, and there are no accounts, analytics or trackers.</p>
+      <div class="row wrap">
+        <button class="btn" id="expJson">Export JSON</button>
+        <button class="btn" id="expCsv">Export CSV</button>
+        <label class="btn">Import JSON/CSV<input type="file" id="importFile" accept=".json,.csv,application/json,text/csv" hidden></label>
+      </div>
+      <div class="row wrap">
+        <button class="btn" data-action="demo" id="demoBtn">Load demo data</button>
+        <button class="btn" id="removeDemoBtn" hidden>Remove demo data</button>
+        <button class="btn danger" id="deleteAll">Delete all data</button>
+      </div>
+      <p class="muted tiny">Demo entries are marked as demo and never replace your real check-ins. “Remove demo data” deletes only them.</p>
+      <p id="dataMsg" class="muted small" role="status"></p>
+    </div>
+    <div class="card">
+      <h3>Passcode lock <span class="muted small">(optional)</span></h3>
+      <p class="muted small">Asks for a passcode when MoodMap opens. It's a privacy screen for a shared device, not encryption; anyone with access to the browser's storage could still read the data.</p>
+      <form id="passForm" class="row wrap">
+        <input id="passNew" type="password" inputmode="numeric" minlength="4" maxlength="32" placeholder="New passcode (4+ chars)" autocomplete="new-password">
+        <button class="btn" type="submit">Set passcode</button>
+        <button class="btn ghost" type="button" id="passOff" hidden>Remove passcode</button>
+      </form>
+      <p id="passMsg" class="muted small" role="status"></p>
+    </div>
+    <div class="card">
+      <h3>Custom tags</h3>
+      <div id="customTagList" class="tags"></div>
+      <p class="muted tiny">Removing a custom tag here hides it from the picker; past entries keep it.</p>
+    </div>
+    <div class="card about" id="about">
+      <h3>About</h3>
+      <p>MoodMap is a free, open-source mood and energy journal. Check in once a day, see your year as colored pixels, and spot patterns in your own entries.</p>
+      <p class="muted small">MoodMap is not medical advice and can't diagnose anything. Insights only show what tends to happen together in your entries. If you're struggling, please talk to someone you trust or a professional. In the US you can call or text <a href="tel:988">988</a> or visit <a href="https://988lifeline.org/" target="_blank" rel="noopener">988lifeline.org</a> (Suicide &amp; Crisis Lifeline, 24/7). Outside the US, contact your local emergency or crisis service.</p>
+      <p class="muted small"><a href="https://github.com/shaikbasha1437/moodmap" target="_blank" rel="noopener">Source on GitHub</a> · MIT License</p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot"><span>Private by design — your data never leaves this device.</span> · <span>Not medical advice.</span> <a href="#about" data-goto="settings">About &amp; support</a></footer>
+
+<dialog id="dayDialog" class="dialog">
+  <div id="dayBody"></div>
+  <div class="row"><button class="btn primary" id="dayEdit">Edit this day</button><button class="btn ghost" id="dayClose">Close</button></div>
+</dialog>
+<dialog id="confirmDialog" class="dialog">
+  <p id="confirmText"></p>
+  <input id="confirmInput" placeholder="Type DELETE to confirm" aria-label="Confirmation" hidden>
+  <div class="row"><button class="btn danger" id="confirmYes">Confirm</button><button class="btn ghost" id="confirmNo">Cancel</button></div>
+</dialog>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="core.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
