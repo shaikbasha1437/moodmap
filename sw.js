@@ -1,4 +1,4 @@
-const CACHE = 'moodmap-v2';
+const CACHE = 'moodmap-v3';
 const ASSETS = ['./', './index.html', './styles.css', './core.js', './app.js', './manifest.webmanifest', './icon.svg'];
 self.addEventListener('install', (e) => {
   self.skipWaiting();

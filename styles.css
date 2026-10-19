@@ -81,7 +81,7 @@ input:focus,textarea:focus,select:focus,button:focus-visible{outline:2px solid v
 .year-grid{display:grid;grid-template-columns:34px repeat(31,minmax(14px,1fr));gap:3px;min-width:560px}
 .year-grid .hd{font-size:.68rem;color:var(--muted);text-align:center;align-self:end}
 .year-grid .mo{font-size:.72rem;color:var(--muted);align-self:center}
-.px{aspect-ratio:1;border-radius:4px;background:var(--empty);border:0;padding:0;cursor:pointer;transition:transform .1s}
+.px{aspect-ratio:1;min-width:0;border-radius:4px;background:var(--empty);border:0;padding:0;cursor:pointer;transition:transform .1s}
 .px:hover{transform:scale(1.25);position:relative;z-index:1}
 .px.none{background:transparent;cursor:default}.px.none:hover{transform:none}
 .px.future{opacity:.45;cursor:default}
@@ -125,6 +125,6 @@ input:focus,textarea:focus,select:focus,button:focus-visible{outline:2px solid v
   .stats{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}
   .pick button .em{font-size:22px}.card{padding:14px}
   .day .e{font-size:1rem}.day{padding:4px 5px}
-  .year-grid{grid-template-columns:24px repeat(31,1fr);gap:2px;min-width:0}.px{border-radius:2px}.year-grid .hd{font-size:.6rem}.year-grid .mo{font-size:.62rem}
+  .year-grid{grid-template-columns:24px repeat(31,minmax(0,1fr));gap:2px;min-width:0}.px{border-radius:2px;min-width:0;width:100%}.year-grid .hd{font-size:.6rem}.year-grid .mo{font-size:.62rem}.grid-wrap{padding:2px 4px 2px 0}.tabs{gap:0;padding:4px 8px;justify-content:space-between}.tab{padding:7px 10px;font-size:.88rem}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
